@@ -51,12 +51,57 @@ vim.o.showmode = false
 --  See `:help 'clipboard'`
 vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
 --
--- autopairs
-vim.keymap.set('i', '[', '[]<Left>', { noremap = true })
-vim.keymap.set('i', '{', '{}<Left>', { noremap = true })
-vim.keymap.set('i', '(', '()<Left>', { noremap = true })
-vim.keymap.set('i', "'", "''<Left>", { noremap = true })
-vim.keymap.set('i', '"', '""<Left>', { noremap = true })
+-- Autopairs:
+--
+
+-- Insert an opening bracket/quote and its closing pair
+local function insert_pair(open, close)
+  return function()
+    -- Insert opening and closing character at cursor
+    vim.api.nvim_put({ open .. close }, 'c', true, true)
+
+    -- Move cursor back one space inside the pair
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Left>', true, false, true), 'n', false)
+  end
+end
+
+-- Map of opening -> closing
+local bracket_pairs = {
+  ['('] = ')',
+  ['['] = ']',
+  ['{'] = '}',
+  ["'"] = "'",
+  ['"'] = '"',
+}
+
+-- Set keymaps for opening brackets
+for open, close in pairs(bracket_pairs) do
+  vim.keymap.set('i', open, insert_pair(open, close), { noremap = true })
+end
+
+-- Smart skip for closing brackets/quotes
+local function smart_skip(char)
+  return function()
+    local col = vim.fn.col '.' -- 1-based column
+    local line = vim.api.nvim_get_current_line()
+    local next_char = line:sub(col, col) -- character under cursor
+
+    if next_char == char then
+      -- Move cursor right
+      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Right>', true, false, true), 'n', false)
+    else
+      -- Insert normally
+      vim.api.nvim_put({ char }, 'c', true, true)
+    end
+  end
+end
+
+-- Map closing brackets/quotes for smart skip
+local closing_chars = { ')', ']', '}', "'", '"' }
+for _, char in ipairs(closing_chars) do
+  vim.keymap.set('i', char, smart_skip(char), { noremap = true })
+end
+
 -- Enable break indent
 vim.o.breakindent = true
 
