@@ -1,106 +1,50 @@
---[[
-
-
-     - https://learnxinyminutes.com/docs/lua/
-    - :help lua-guide
-    - (or HTML version): https://neovim.io/doc/user/lua-guide.html
-
-Kickstart Guide:
-
-  TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
-
-    (If you already know the Neovim basics, you can skip this step.)
-
-If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now! :)
---]]
-
 -- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- Set to true if you have a Nerd Font installed and selected in the terminal
+
+
+
+
+vim.o.clipboard = 'unnamedplus'
+
 vim.g.have_nerd_font = false
 
--- [[ Setting options ]]
--- See `:help vim.o`
--- NOTE: You can change these options as you wish!
---  For more options, you can see `:help option-list`
-
--- Make line numbers default
-vim.o.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
 
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
+-- [[ Setting options ]]
+-- `:help vim.o`
+-- :help option-list`
 
--- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
-vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
---
--- Autopairs:
---
+-- Make line numbers default
+vim.o.number = true
+vim.keymap.set('v', '<C-j>', ":m '>+1<CR>gv=gv", { noremap = true })
+vim.keymap.set('v', '<C-k>', ":m '<-2<CR>gv=gv", { noremap = true })
+vim.keymap.set('i', 'jk', '<Esc>', { noremap = true })
+vim.keymap.set('v', '<', '<gv', { noremap = true })
+vim.keymap.set('v', '>', '>gv', { noremap = true })
 
--- Insert an opening bracket/quote and its closing pair
-local function insert_pair(open, close)
-  return function()
-    -- Insert opening and closing character at cursor
-    vim.api.nvim_put({ open .. close }, 'c', true, true)
 
-    -- Move cursor back one space inside the pair
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Left>', true, false, true), 'n', false)
-  end
-end
 
--- Map of opening -> closing
-local bracket_pairs = {
-  ['('] = ')',
-  ['['] = ']',
-  ['{'] = '}',
-  ["'"] = "'",
-  ['"'] = '"',
-}
 
--- Set keymaps for opening brackets
-for open, close in pairs(bracket_pairs) do
-  vim.keymap.set('i', open, insert_pair(open, close), { noremap = true })
-end
 
--- Smart skip for closing brackets/quotes
-local function smart_skip(char)
-  return function()
-    local col = vim.fn.col '.' -- 1-based column
-    local line = vim.api.nvim_get_current_line()
-    local next_char = line:sub(col, col) -- character under cursor
+vim.o.conceallevel = 2
 
-    if next_char == char then
-      -- Move cursor right
-      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Right>', true, false, true), 'n', false)
-    else
-      -- Insert normally
-      vim.api.nvim_put({ char }, 'c', true, true)
-    end
-  end
-end
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'python', 'lua' },
+  callback = function()
+    vim.fn.matchadd('Conceal', '<=', 10, -1, { conceal = '≤' })
+    vim.fn.matchadd('Conceal', '>=', 10, -1, { conceal = '≥' })
+    vim.fn.matchadd('Conceal', '!=', 10, -1, { conceal = '≠' })
+  end,
+})
 
--- Map closing brackets/quotes for smart skip
-local closing_chars = { ')', ']', '}', "'", '"' }
-for _, char in ipairs(closing_chars) do
-  vim.keymap.set('i', char, smart_skip(char), { noremap = true })
-end
+
 
 -- Enable break indent
 vim.o.breakindent = true
@@ -718,7 +662,7 @@ require('lazy').setup({
         --   <c-y> to accept ([y]es) the completion.
         --    This will auto-import if your LSP supports it.
         --    This will expand snippets if the LSP sent a snippet.
-        -- 'super-tab' for tab to accept
+        preset = 'super-tab',
         -- 'enter' for enter to accept
         -- 'none' for no mappings
         --
@@ -735,7 +679,8 @@ require('lazy').setup({
         -- <c-k>: Toggle signature help
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
-        preset = 'default',
+
+        -- preset = 'default',
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -858,8 +803,8 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
