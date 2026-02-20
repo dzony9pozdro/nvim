@@ -17,7 +17,10 @@ return {
     filesystem = {
       window = {
         mappings = {
+
           ['\\'] = 'close_window',
+          ['l'] = 'open',
+          ['h'] = 'navigate_up',
         },
       },
     },

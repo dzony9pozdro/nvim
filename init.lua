@@ -2,10 +2,6 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
-
-
-
-
 vim.o.clipboard = 'unnamedplus'
 
 vim.g.have_nerd_font = false
@@ -29,10 +25,6 @@ vim.keymap.set('i', 'jk', '<Esc>', { noremap = true })
 vim.keymap.set('v', '<', '<gv', { noremap = true })
 vim.keymap.set('v', '>', '>gv', { noremap = true })
 
-
-
-
-
 vim.o.conceallevel = 2
 
 vim.api.nvim_create_autocmd('FileType', {
@@ -43,8 +35,6 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.fn.matchadd('Conceal', '!=', 10, -1, { conceal = '≠' })
   end,
 })
-
-
 
 -- Enable break indent
 vim.o.breakindent = true
@@ -811,7 +801,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
