@@ -19,6 +19,28 @@ vim.o.showmode = false
 
 -- Make line numbers default
 vim.o.number = true
+
+local diagnostics_visible = true
+
+function ToggleDiagnostics()
+  if diagnostics_visible then
+    vim.diagnostic.hide()
+  else
+    vim.diagnostic.show()
+  end
+  diagnostics_visible = not diagnostics_visible
+end
+
+-- single quotes: a -> '
+vim.keymap.set({ 'o', 'x' }, 'a', "i'", { noremap = true })
+vim.keymap.set({ 'o', 'x' }, 'aa', "a'", { noremap = true })
+
+-- double quotes: s -> "
+vim.keymap.set({ 'o', 'x' }, 's', 'i"', { noremap = true })
+vim.keymap.set({ 'o', 'x' }, 'ss', 'a"', { noremap = true })
+
+vim.keymap.set('n', '<leader>td', ToggleDiagnostics)
+
 vim.keymap.set('v', '<C-j>', ":m '>+1<CR>gv=gv", { noremap = true })
 vim.keymap.set('v', '<C-k>', ":m '<-2<CR>gv=gv", { noremap = true })
 vim.keymap.set('i', 'jk', '<Esc>', { noremap = true })
@@ -572,6 +594,12 @@ require('lazy').setup({
         },
       })
       vim.lsp.enable 'lua_ls'
+      -- Swift/iOS development
+      vim.lsp.config('sourcekit', {
+        cmd = { 'xcrun', 'sourcekit-lsp' },
+        capabilities = capabilities,
+      })
+      vim.lsp.enable 'sourcekit'
     end,
   },
 
@@ -726,7 +754,15 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme('catppuccin')
+      -- vim.cmd.colorscheme('catppuccin-frappe')
+      vim.cmd.colorscheme 'catppuccin-macchiato'
+      -- vim.cmd.colorscheme('catppuccin-mocha')
+      -- vim.cmd.colorscheme 'gruvbox'
+      -- vim.cmd.colorscheme('rose-pine')
+      -- vim.cmd.colorscheme('rose-pine-main')
+      -- vim.cmd.colorscheme('rose-pine-moon')
     end,
   },
 
